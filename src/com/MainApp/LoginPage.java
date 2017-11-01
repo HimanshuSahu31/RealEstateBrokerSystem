@@ -24,11 +24,14 @@ public class LoginPage {
             public void actionPerformed(ActionEvent e) {
                 String username = unameField.getText();
                 String password = String.valueOf(pwordField.getPassword());
-                System.out.println(username + " " + password);
-                Connection connectionDB = connect();
-                connectionDB.setAutoCommit(false);
-                if(connectionDB != null)
-                    connectionDB.close();
+                if(username != "" && password != "") {
+                    System.out.println(username + " " + password);
+                    Connection connectionDB = connect();
+                    connectionDB.setAutoCommit(false);
+                    if (connectionDB != null)
+                        connectionDB.close();
+                }
+
             }
         });
     }
