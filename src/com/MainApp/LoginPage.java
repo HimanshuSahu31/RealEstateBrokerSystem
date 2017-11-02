@@ -4,13 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 
 public class LoginPage {
+    private static JFrame frame;
     private JButton loginButton;
     private JTextField unameField;
     private JPasswordField pwordField;
@@ -30,21 +28,25 @@ public class LoginPage {
                     System.out.println(username + " " + password);
                     try {
                         DatabaseConnect connectionDB = new DatabaseConnect();
-                        connectionDB.setAutoCommit(false);
-                        Statement stmt = connectionDB.createStatement();
-                        ResultSet rs = stmt.executeQuery("select * from tbl_user where user_name = '" + username + "' and user_password = '" + password + "';");
+                        ResultSet rs = connectionDB.selectQuery("select * from tbl_user where user_name = '" + username + "' and user_password = '" + password + "';");
                         if (rs.next()) {
                             resultMessage.setText("Authentication Successful");
                             int getUserID = rs.getInt(1);
-                            rs = stmt.executeQuery("select owner_id from tbl_owner where user_id = '" + getUserID + "';");
+                            rs = connectionDB.selectQuery("select owner_id from tbl_owner where user_id = '" + getUserID + "';");
                             if (rs.next()) {
                                 int getOwnerID = rs.getInt(1);
+                                frame.setTitle("Client Home: Real Estate Broker System");
                                 OwnerHome ownerHome = new OwnerHome(getOwnerID);
+                                frame.setContentPane(ownerHome.getForm());
                                 ownerHome.setVisible(true);
                             } else {
-                                rs = stmt.executeQuery("select client_id from tbl_client where user_id = '" + getUserID + "';");
+                                rs = connectionDB.selectQuery("select client_id from tbl_client where user_id = '" + getUserID + "';");
                                 if (rs.next()) {
                                     int getClientID = rs.getInt(1);
+                                    ClientHome clientHome = new ClientHome(getClientID);
+                                    frame.setTitle("Owner Home: Real Estate Broker System");
+                                    frame.setContentPane(clientHome.getForm());
+                                    clientHome.setVisible(true);
                                 } else {
                                     resultMessage.setText("User is neither an Owner or Client");
                                 }
@@ -54,7 +56,6 @@ public class LoginPage {
                         }
                         rs.close();
                         connectionDB.close();
-                        stmt.close();
                     } catch (SQLException exp) {
                         System.out.println(exp.getMessage());
                     }
@@ -71,7 +72,7 @@ public class LoginPage {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Login Page: Real Estate Broker System");
+        frame = new JFrame("Login Page: Real Estate Broker System");
         frame.setContentPane(new LoginPage().LoginForm);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
