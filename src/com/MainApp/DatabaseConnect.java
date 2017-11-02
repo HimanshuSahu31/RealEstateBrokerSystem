@@ -47,6 +47,18 @@ public class DatabaseConnect {
         return null;
     }
 
+    boolean updateQuery(String str) {
+        try {
+            setAutoCommit(true);
+            Statement stmt = createStatement();
+            stmt.executeUpdate(str);
+        } catch (SQLException exp) {
+            System.out.println(exp.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     void close() {
         try {
             connection.close();
