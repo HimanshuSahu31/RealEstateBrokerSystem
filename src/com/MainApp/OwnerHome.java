@@ -5,11 +5,13 @@ import java.awt.*;
 
 public class OwnerHome extends JFrame {
     int ownerID;
+    String Email;
     private JPanel OwnerHomeForm;
 
-    public OwnerHome(int ID) {
+    public OwnerHome(int ID, String email) {
       //  this();
         ownerID = ID;
+        Email = email;
     }
 
     /*public OwnerHome() {
