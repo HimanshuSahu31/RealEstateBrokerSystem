@@ -38,7 +38,7 @@ public class LoginPage {
                                 frame.setTitle("Client Home: Real Estate Broker System");
                                 OwnerHome ownerHome = new OwnerHome(getOwnerID, username);
                                 frame.setContentPane(ownerHome.getForm());
-                                ownerHome.setVisible(true);
+                                //ownerHome.setVisible(true);
                             } else {
                                 rs = connectionDB.selectQuery("select client_id from tbl_client where user_id = '" + getUserID + "';");
                                 if (rs.next()) {
@@ -46,7 +46,7 @@ public class LoginPage {
                                     ClientHome clientHome = new ClientHome(getClientID, username);
                                     frame.setTitle("Owner Home: Real Estate Broker System");
                                     frame.setContentPane(clientHome.getForm());
-                                    clientHome.setVisible(true);
+                                    //clientHome.setVisible(true);
                                 } else {
                                     resultMessage.setText("User is neither an Owner or Client");
                                 }

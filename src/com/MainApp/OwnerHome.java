@@ -2,16 +2,53 @@ package com.MainApp;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class OwnerHome extends JFrame {
     int ownerID;
     String Email;
     private JPanel OwnerHomeForm;
+    private JTabbedPane ownerHome;
+    private JLabel owner_welcome;
+    private JPanel manage;
+    private JPanel add_list;
+    private JTextField tf_pro_price;
+    private JTextField tf_pro_maintenance;
+    private JTextField tf_pro_address;
+    private JTextField tf_pro_pincode;
+    private JTextField tf_pro_area;
+    private JTextField tf_pro_type;
+    private JButton add_listing;
 
     public OwnerHome(int ID, String email) {
-      //  this();
+        //  this();
         ownerID = ID;
         Email = email;
+        owner_welcome.setText("Welcome " + email);
+
+        add_listing.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String property_price, property_maintenance, property_address, property_pincode, property_area, property_type;
+
+                property_price = tf_pro_price.getText();
+                property_address = tf_pro_address.getText();
+                property_area = tf_pro_area.getText();
+                property_maintenance = tf_pro_maintenance.getText();
+                property_pincode = tf_pro_pincode.getText();
+                property_type = tf_pro_type.getText();
+                if (!property_pincode.equals("") && !property_type.equals("")) {
+                    DatabaseConnect connectionDB = new DatabaseConnect();
+                    String sql = "INSERT INTO public.tbl_property (property_id,property_price,property_address1,property_dimension,property_maintenance,property_pincode,property_type,owner_id,property_listed_date) VALUES("+ + property_price + ",'" + property_address + "'," + property_area + "," + property_maintenance + "," + property_pincode + "," + property_type + "," + ownerID + "," + (new SimpleDateFormat("yyyy-MM-dd").format(new Date())) + ");";
+                    System.out.println(sql);
+                }
+            }
+        });
     }
 
     /*public OwnerHome() {
@@ -42,7 +79,55 @@ public class OwnerHome extends JFrame {
      */
     private void $$$setupUI$$$() {
         OwnerHomeForm = new JPanel();
-        OwnerHomeForm.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        OwnerHomeForm.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        owner_welcome = new JLabel();
+        owner_welcome.setText("Welcome");
+        OwnerHomeForm.add(owner_welcome, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        ownerHome = new JTabbedPane();
+        OwnerHomeForm.add(ownerHome, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
+        manage = new JPanel();
+        manage.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        ownerHome.addTab("Manage Property", manage);
+        add_list = new JPanel();
+        add_list.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(8, 2, new Insets(0, 0, 0, 0), -1, -1));
+        ownerHome.addTab("Add New Listing", add_list);
+        final JLabel label1 = new JLabel();
+        label1.setText("price");
+        add_list.add(label1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
+        add_list.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(7, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        tf_pro_price = new JTextField();
+        add_list.add(tf_pro_price, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("Maintenance");
+        add_list.add(label2, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tf_pro_maintenance = new JTextField();
+        add_list.add(tf_pro_maintenance, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("address");
+        add_list.add(label3, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tf_pro_address = new JTextField();
+        tf_pro_address.setText("");
+        add_list.add(tf_pro_address, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("pincode");
+        add_list.add(label4, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tf_pro_pincode = new JTextField();
+        add_list.add(tf_pro_pincode, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label5 = new JLabel();
+        label5.setText("Area");
+        add_list.add(label5, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tf_pro_area = new JTextField();
+        add_list.add(tf_pro_area, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("Type(BHK)");
+        add_list.add(label6, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tf_pro_type = new JTextField();
+        tf_pro_type.setText("");
+        add_list.add(tf_pro_type, new com.intellij.uiDesigner.core.GridConstraints(5, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        add_listing = new JButton();
+        add_listing.setText("Button");
+        add_list.add(add_listing, new com.intellij.uiDesigner.core.GridConstraints(6, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -51,4 +136,13 @@ public class OwnerHome extends JFrame {
     public JComponent $$$getRootComponent$$$() {
         return OwnerHomeForm;
     }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+
 }
