@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class LoginPage {
     private JButton loginButton;
@@ -15,36 +17,57 @@ public class LoginPage {
     private JLabel uname_label;
     private JLabel pword_label;
     private JPanel LoginForm;
-    private final String url = "jdbc:postgresql://localhost/brokerSystem";
-    private final String user = "postgres";
-    private final String password = "h";
+    private JLabel resultMessage;
+
     public LoginPage() {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = unameField.getText();
                 String password = String.valueOf(pwordField.getPassword());
-                if(username != "" && password != "") {
+                //System.out.println(username + " abc " + password);
+                if (!username.equals("") && !password.equals("")) {
                     System.out.println(username + " " + password);
-                    Connection connectionDB = connect();
-                    connectionDB.setAutoCommit(false);
-                    if (connectionDB != null)
+                    try {
+                        DatabaseConnect connectionDB = new DatabaseConnect();
+                        connectionDB.setAutoCommit(false);
+                        Statement stmt = connectionDB.createStatement();
+                        ResultSet rs = stmt.executeQuery("select * from tbl_user where user_name = '" + username + "' and user_password = '" + password + "';");
+                        if (rs.next()) {
+                            resultMessage.setText("Authentication Successful");
+                            int getUserID = rs.getInt(1);
+                            rs = stmt.executeQuery("select owner_id from tbl_owner where user_id = '" + getUserID + "';");
+                            if (rs.next()) {
+                                int getOwnerID = rs.getInt(1);
+                                OwnerHome ownerHome = new OwnerHome(getOwnerID);
+                                ownerHome.setVisible(true);
+                            } else {
+                                rs = stmt.executeQuery("select client_id from tbl_client where user_id = '" + getUserID + "';");
+                                if (rs.next()) {
+                                    int getClientID = rs.getInt(1);
+                                } else {
+                                    resultMessage.setText("User is neither an Owner or Client");
+                                }
+                            }
+                        } else {
+                            resultMessage.setText("Incorrect Username or Password");
+                        }
+                        rs.close();
                         connectionDB.close();
+                        stmt.close();
+                    } catch (SQLException exp) {
+                        System.out.println(exp.getMessage());
+                    }
+                } else {
+                    String msg = "One or Both of the fields Username, Password is empty";
+                    System.out.println(msg);
+                    //JOptionPane.showMessageDialog(null, msg);
+                    resultMessage.setText(msg);
+                    unameField.setText("");
+                    pwordField.setText("");
                 }
-
             }
         });
-    }
-
-    public Connection connect() {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Connected to the PostgreSQL server successfully.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return conn;
     }
 
     public static void main(String[] args) {
@@ -71,7 +94,7 @@ public class LoginPage {
      */
     private void $$$setupUI$$$() {
         LoginForm = new JPanel();
-        LoginForm.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+        LoginForm.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
         LoginForm.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         uname_label = new JLabel();
@@ -86,9 +109,12 @@ public class LoginPage {
         pwordField = new JPasswordField();
         pwordField.setToolTipText("Enter Your Password");
         LoginForm.add(pwordField, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        resultMessage = new JLabel();
+        resultMessage.setText("");
+        LoginForm.add(resultMessage, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         pword_label = new JLabel();
         pword_label.setText("Password:");
-        LoginForm.add(pword_label, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 2, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        LoginForm.add(pword_label, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 3, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
