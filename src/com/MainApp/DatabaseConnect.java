@@ -5,7 +5,7 @@ import java.sql.*;
 public class DatabaseConnect {
     private final String url = "jdbc:postgresql://localhost/brokerSystem";
     private final String user = "postgres";
-    private final String password = "h";
+    private final String password = "dhruv123";
     Connection connection = null;
 
     public DatabaseConnect() {
