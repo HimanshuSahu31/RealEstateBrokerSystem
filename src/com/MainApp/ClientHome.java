@@ -36,14 +36,17 @@ public class ClientHome extends JFrame {
             public void stateChanged(ChangeEvent e) {
                 int selectedIndex = clientHome.getSelectedIndex();
                 switch (selectedIndex) {
-                    case 1:
+                    case 0:
                         loadProfile();
                         break;
+                    case 1:
+                        //loadSearchPage();
+                        break;
                     case 2:
+                        //loadSearchResult();
                         break;
                     case 3:
-                        break;
-                    case 4:
+                        //loadManageProperty();
                         break;
                 }
             }
@@ -73,11 +76,13 @@ public class ClientHome extends JFrame {
     void loadProfile() {
         try {
             DatabaseConnect databaseConnect = new DatabaseConnect();
+            System.out.println(Email);
             ResultSet rs = databaseConnect.selectQuery("select * from tbl_user where user_email = '" + Email + "';");
             if (rs.next()) {
-                nameField.setText(Integer.toString(rs.getInt("user_name")));
-                addressField.setText(rs.getString("user_address"));
-                contactField.setText(rs.getString("user_contact"));
+                System.out.println(rs.getString(2) + " " + rs.getString(3) + " " + rs.getString(5));
+                nameField.setText(rs.getString(2));
+                addressField.setText(rs.getString(3));
+                contactField.setText(rs.getString(5));
                 currentPassword.setText("");
                 newPassword.setText("");
                 confirmNewPassword.setText("");
@@ -94,23 +99,34 @@ public class ClientHome extends JFrame {
         String newUserName = nameField.getText();
         String newAddress = addressField.getText();
         String newContact = contactField.getText();
-        String currPwd = currentPassword.getPassword().toString();
-        String newPwd = newPassword.getPassword().toString();
-        String confirmNewPwd = confirmNewPassword.getPassword().toString();
+        String currPwd = String.valueOf(currentPassword.getPassword());
+        String newPwd = String.valueOf(newPassword.getPassword());
+        String confirmNewPwd = String.valueOf(confirmNewPassword.getPassword());
         try {
             DatabaseConnect databaseConnect = new DatabaseConnect();
             ResultSet rs = databaseConnect.selectQuery("select * from tbl_user where user_email = '" + Email + "';");
             if (rs.next()) {
-                String dbUsername = rs.getString("user_name");
-                String dbAddress = rs.getString("user_address");
-                String dbContact = rs.getString("user_contact");
-                String dbPwd = rs.getString("user_password");
-                if(currPwd.equals(dbPwd)) {
-
+                /*String dbUsername = rs.getString(2);
+                String dbAddress = rs.getString(2);
+                String dbContact = rs.getString(5);*/
+                String dbPwd = rs.getString(4);
+                if (currPwd.equals(dbPwd)) {
+                    if (!newPwd.equals("") && !confirmNewPwd.equals("")) {
+                        if (newPwd.equals(confirmNewPwd))
+                            updateProfileQuery(newPwd);
+                        else
+                            resultMessage.setText("New Password does not match with Confirm New Password");
+                    }
+                    if (!newAddress.equals("") && !newUserName.equals("") && !newContact.equals(""))
+                        updateProfileQuery(newUserName, newAddress, newContact);
+                    else
+                        resultMessage.setText(resultMessage.getText() + "\n" + "All fields not populated");
                 } else {
                     resultMessage.setText("Error: Incorrect Current Password");
+                    loadProfile();
                 }
             }
+            loadProfile();
         } catch (SQLException exp) {
             System.out.println(exp.getMessage());
             resultMessage.setText("Error: Unable to Establish Database Connection");
@@ -125,7 +141,7 @@ public class ClientHome extends JFrame {
 
     void updateProfileQuery(String uname, String address, String contact) {
         DatabaseConnect databaseConnect = new DatabaseConnect();
-        databaseConnect.updateQuery("update tbl_user set user_name = '" + uname + "', user_address = '" + address + "', user_contact = " + contact + "' where user_email = '" + Email + "';");
+        databaseConnect.updateQuery("update tbl_user set user_name = '" + uname + "', user_address = '" + address + "', user_contact_number = '" + contact + "' where user_email = '" + Email + "';");
         databaseConnect.close();
     }
 

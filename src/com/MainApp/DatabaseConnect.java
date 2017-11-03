@@ -5,7 +5,7 @@ import java.sql.*;
 public class DatabaseConnect {
     private final String url = "jdbc:postgresql://localhost/brokerSystem";
     private final String user = "postgres";
-    private final String password = "dhruv123";
+    private final String password = "h";
     Connection connection = null;
 
     public DatabaseConnect() {
@@ -49,9 +49,10 @@ public class DatabaseConnect {
 
     boolean updateQuery(String str) {
         try {
-            setAutoCommit(true);
+            setAutoCommit(false);
             Statement stmt = createStatement();
             stmt.executeUpdate(str);
+            connection.commit();
         } catch (SQLException exp) {
             System.out.println(exp.getMessage());
             return false;

@@ -23,30 +23,29 @@ public class LoginPage {
             public void actionPerformed(ActionEvent e) {
                 String username = unameField.getText();
                 String password = String.valueOf(pwordField.getPassword());
-                //System.out.println(username + " abc " + password);
                 if (!username.equals("") && !password.equals("")) {
                     System.out.println(username + " " + password);
                     try {
                         DatabaseConnect connectionDB = new DatabaseConnect();
-                        ResultSet rs = connectionDB.selectQuery("select * from tbl_user where user_name = '" + username + "' and user_password = '" + password + "';");
+                        ResultSet rs = connectionDB.selectQuery("select * from tbl_user where user_email = '" + username + "' and user_password = '" + password + "';");
                         if (rs.next()) {
                             resultMessage.setText("Authentication Successful");
                             int getUserID = rs.getInt(1);
                             rs = connectionDB.selectQuery("select owner_id from tbl_owner where user_id = '" + getUserID + "';");
                             if (rs.next()) {
                                 int getOwnerID = rs.getInt(1);
-                                frame.setTitle("Client Home: Real Estate Broker System");
+                                frame.setTitle("Owner Home: Real Estate Broker System");
                                 OwnerHome ownerHome = new OwnerHome(getOwnerID, username);
                                 frame.setContentPane(ownerHome.getForm());
-                                //ownerHome.setVisible(true);
+                                ownerHome.loadProfile();
                             } else {
                                 rs = connectionDB.selectQuery("select client_id from tbl_client where user_id = '" + getUserID + "';");
                                 if (rs.next()) {
                                     int getClientID = rs.getInt(1);
                                     ClientHome clientHome = new ClientHome(getClientID, username);
-                                    frame.setTitle("Owner Home: Real Estate Broker System");
+                                    frame.setTitle("Client Home: Real Estate Broker System");
                                     frame.setContentPane(clientHome.getForm());
-                                    //clientHome.setVisible(true);
+                                    clientHome.loadProfile();
                                 } else {
                                     resultMessage.setText("User is neither an Owner or Client");
                                 }
